@@ -30,7 +30,7 @@ class View extends JPanel implements MouseListener {
 
         currentState.state = solver.correctOrder.get(position).state;
 
-        if (position <= solver.correctOrder.size()) {
+        if (position < solver.correctOrder.size()) {
             position++;
         }
 
