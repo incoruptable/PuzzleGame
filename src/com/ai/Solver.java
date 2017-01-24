@@ -1,9 +1,7 @@
 package com.ai;
 
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
 
 
 public class Solver {
@@ -11,12 +9,13 @@ public class Solver {
     TreeSet<GameState> previouslyVisited;
     boolean[][] occupiedBlocks;
     Map<Integer, PuzzlePiece> puzzlePieceMap;
-
+    List<GameState> correctOrder;
 
     public Solver() {
         occupiedBlocks = new boolean[10][10];
         previouslyVisited = new TreeSet<>();
         puzzlePieceMap = new HashMap<>();
+        correctOrder = new LinkedList<>();
 
         //initialize all members of occupiedBlocks to false
         for (int i = 0; i < 10; i++) {
@@ -85,8 +84,66 @@ public class Solver {
 
     }
 
+    public List<GameState> searchForSolution() {
+        GameState root = new GameState();
+        StateComparator stateComparator = new StateComparator();
+        Queue<GameState> queue = new LinkedList<>();
+        TreeSet<GameState> visitedGameStates = new TreeSet<>(stateComparator);
+        List<GameState> visitedStates = new LinkedList<>();
 
-    public boolean checkIfValidState(GameState state) {
+        queue.add(root);
+        visitedGameStates.add(root);
+        GameState current = new GameState();
+
+        byte[] temp = new byte[22];
+        while (!queue.isEmpty()) {
+            current = queue.poll();
+            visitedStates.add(current);
+            //if(visitedStates.size() == 10000){
+            //correctOrder = visitedStates;
+            //  return correctOrder;
+            //}
+
+
+            if (current.state[0] == 4 && current.state[1] == -2) {
+                buildListOfGameStates(current);
+                return correctOrder;
+            }
+            for (int i = 0; i < 11; i++) {
+                temp = current.state.clone();
+                temp[2 * i]--;
+                if (!visitedGameStates.contains(new GameState(null, temp)) && checkIfValidState(temp)) {
+                    visitedGameStates.add(new GameState(current, temp));
+                    queue.add(new GameState(current, temp));
+                }
+                temp = current.state.clone();
+                temp[2 * i]++;
+                if (!visitedGameStates.contains(new GameState(null, temp)) && checkIfValidState(temp)) {
+                    visitedGameStates.add(new GameState(current, temp));
+                    queue.add(new GameState(current, temp));
+                }
+                temp = current.state.clone();
+                temp[2 * i + 1]--;
+                if (!visitedGameStates.contains(new GameState(null, temp)) && checkIfValidState(temp)) {
+                    visitedGameStates.add(new GameState(current, temp));
+                    queue.add(new GameState(current, temp));
+                }
+                temp = current.state.clone();
+                temp[2 * i + 1]++;
+                if (!visitedGameStates.contains(new GameState(null, temp)) && checkIfValidState(temp)) {
+                    visitedGameStates.add(new GameState(current, temp));
+                    queue.add(new GameState(current, temp));
+                }
+
+            }
+
+        }
+
+        return null;
+    }
+
+
+    public boolean checkIfValidState(byte[] state) {
         boolean occupiedStatesFuture[][] = new boolean[10][10];
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
@@ -124,24 +181,33 @@ public class Solver {
         for (int i = 0; i < 11; i++) {
             if (puzzlePieceMap.get(i).blocks == 3) {
                 for (int j = 0; j < 3; j++) {
-                    if (occupiedStatesFuture[puzzlePieceMap.get(i).xStartings[j] + state.state[2 * i]][puzzlePieceMap.get(i).yStartings[j] + state.state[2 * i + 1]])
+                    if (occupiedStatesFuture[puzzlePieceMap.get(i).xStartings[j] + state[2 * i]][puzzlePieceMap.get(i).yStartings[j] + state[2 * i + 1]])
                         return false;
                     else
-                        occupiedStatesFuture[puzzlePieceMap.get(i).xStartings[j] + state.state[2 * i]][puzzlePieceMap.get(i).yStartings[j] + state.state[2 * i + 1]] = true;
+                        occupiedStatesFuture[puzzlePieceMap.get(i).xStartings[j] + state[2 * i]][puzzlePieceMap.get(i).yStartings[j] + state[2 * i + 1]] = true;
 
                 }
             } else {
                 for (int j = 0; j < 4; j++) {
-                    if (occupiedStatesFuture[puzzlePieceMap.get(i).xStartings[j] + state.state[2 * i]][puzzlePieceMap.get(i).yStartings[j] + state.state[2 * i + 1]])
+                    if (occupiedStatesFuture[puzzlePieceMap.get(i).xStartings[j] + state[2 * i]][puzzlePieceMap.get(i).yStartings[j] + state[2 * i + 1]])
                         return false;
                     else
-                        occupiedStatesFuture[puzzlePieceMap.get(i).xStartings[j] + state.state[2 * i]][puzzlePieceMap.get(i).yStartings[j] + state.state[2 * i + 1]] = true;
+                        occupiedStatesFuture[puzzlePieceMap.get(i).xStartings[j] + state[2 * i]][puzzlePieceMap.get(i).yStartings[j] + state[2 * i + 1]] = true;
 
                 }
             }
         }
 
         return true;
+    }
+
+    public void buildListOfGameStates(GameState state) {
+
+        if (state.prev != null) {
+            buildListOfGameStates(state.prev);
+        }
+        correctOrder.add(state);
+
     }
 }
 

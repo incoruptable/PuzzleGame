@@ -14,24 +14,35 @@ class View extends JPanel implements MouseListener {
     Graphics graphics;
     int size;
     Solver solver;
+    int position;
 
     View(Main v) throws IOException {
         viz = v;
+        position = 0;
         solver = new Solver();
         rand = new Random(0);
         currentState = new GameState();
         size = 48;
+        solver.searchForSolution();
     }
 
     public void mousePressed(MouseEvent e) {
 
-        GameState newState = new GameState(currentState);
+        currentState.state = solver.correctOrder.get(position).state;
+
+        if (position <= solver.correctOrder.size()) {
+            position++;
+        }
+
+        /*GameState newState = new GameState(currentState);
         newState.state = currentState.state;
         newState.state[20]--;
         if (!solver.checkIfValidState(newState)) {
             System.out.print("Not a valid state. Returning now.");
             return;
         }
+
+        */
 
 
         //currentState.state[rand.nextInt(22)] += (rand.nextInt(2) == 0 ? -1 : 1);
