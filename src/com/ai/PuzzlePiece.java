@@ -10,7 +10,9 @@ public class PuzzlePiece {
     public int green;
     public int blue;
     public int[] xStartings;
+    public int[] currentX;
     public int[] yStartings;
+    public int[] currentY;
     public int blocks;
 
     public PuzzlePiece(int Id, int red, int green, int blue, int x1Starting, int y1Starting, int x2Starting, int y2Starting, int x3Starting, int y3Starting, int x4Starting, int y4Starting) {
@@ -29,6 +31,13 @@ public class PuzzlePiece {
         yStartings[1] = y2Starting;
         yStartings[2] = y3Starting;
         yStartings[3] = y4Starting;
+
+        currentX = new int[4];
+        currentY = new int[4];
+        for (int i = 0; i < 4; i++) {
+            currentX[i] = xStartings[i];
+            currentY[i] = yStartings[i];
+        }
     }
 
     public PuzzlePiece(int Id, int red, int green, int blue, int x1Starting, int y1Starting, int x2Starting, int y2Starting, int x3Starting, int y3Starting) {
@@ -45,6 +54,13 @@ public class PuzzlePiece {
         yStartings[0] = y1Starting;
         yStartings[1] = y2Starting;
         yStartings[2] = y3Starting;
+
+        currentX = new int[3];
+        currentY = new int[3];
+        for (int i = 0; i < 3; i++) {
+            currentX[i] = xStartings[i];
+            currentY[i] = yStartings[i];
+        }
 
     }
 
